@@ -141,6 +141,11 @@ footer{text-align:center;color:var(--muted);font-size:12px;font-style:italic;mar
 .km input[type=range]{flex:1;accent-color:var(--green);height:28px}
 .km input[type=number]{width:70px;height:38px;text-align:center;font-size:15px;font-weight:700;border:1.5px solid var(--line);border-radius:10px}
 .hint{font-size:11px;color:var(--muted);margin-top:5px}
+.evrow{display:flex;gap:8px}.evrow .evin{flex:1;min-width:0}
+.evin{width:100%;box-sizing:border-box;height:40px;padding:0 10px;font:inherit;font-size:14px;font-weight:600;color:var(--ink);background:#fff;border:1.5px solid var(--line);border-radius:10px}
+select.evin{appearance:auto;cursor:pointer}
+textarea.evin{height:auto;padding:8px 10px;resize:vertical;font-weight:500}
+.evin:focus{outline:2px solid var(--gold);border-color:var(--gold)}
 .rows{border-top:1px dashed var(--line);margin:0;padding:8px 0 0}
 .row{display:flex;justify-content:space-between;gap:10px;font-size:13px;padding:5px 0}
 .row dt{color:var(--muted)}
@@ -247,6 +252,31 @@ footer{text-align:center;color:var(--muted);font-size:12px;font-style:italic;mar
         <p class="empty" id="empty">Tap items on the menu to build your combo. 🍽️</p>
 
         <div class="ctl">
+          <div class="fld">
+            <label for="evType">Event type</label>
+            <select id="evType" class="evin" aria-label="Event type">
+              <option value="">Select your occasion</option>
+              <option>Kitty Party</option>
+              <option>Birthday Party</option>
+              <option>Baby Shower</option>
+              <option>Office Party</option>
+              <option>Corporate Event</option>
+              <option>Small Event</option>
+              <option>Festive Get-together</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="fld">
+            <label>Event date &amp; time <span>book 24 hrs in advance</span></label>
+            <div class="evrow">
+              <input id="evDate" class="evin" type="date" aria-label="Event date">
+              <input id="evTime" class="evin" type="time" aria-label="Event time">
+            </div>
+          </div>
+          <div class="fld">
+            <label for="evAddr">Event address <span>within 8 km</span></label>
+            <textarea id="evAddr" class="evin" rows="2" placeholder="House / venue name, area, landmark, Udaipur" aria-label="Event address"></textarea>
+          </div>
           <div class="fld">
             <label for="members">Number of members <span>min. 10 guests</span></label>
             <div class="stepper">
@@ -430,12 +460,22 @@ function waText(c){
     `*Grand total (est.): ${inr(c.total)}*`,
     `All-inclusive per member: ${inr(c.allIn)}`,
     'Taxes as applicable.', '',
-    'Event date & time: ',
-    'Delivery address: ');
+    `*Event type:* ${$('evType').value || '(to be shared)'}`,
+    `*Event date & time:* ${evDateTxt()}`,
+    `*Event address:* ${($('evAddr').value||'').trim() || '(to be shared)'}`);
   return lines.join('\n');
 }
 
 /* ---------- Controls ---------- */
+function evDateTxt(){
+  const d=$('evDate').value, t=$('evTime').value; let out='';
+  if(d){ const x=new Date(d+'T00:00'); out=x.toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short',year:'numeric'}); }
+  if(t){ const [h,m]=t.split(':').map(Number); out+=(out?', ':'')+((h%12)||12)+':'+String(m).padStart(2,'0')+(h<12?' AM':' PM'); }
+  return out||'(to be confirmed)';
+}
+(function(){ const t=new Date(Date.now()+24*3600e3); const z=n=>String(n).padStart(2,'0');
+  $('evDate').min=`${t.getFullYear()}-${z(t.getMonth()+1)}-${z(t.getDate())}`; })();
+['evType','evDate','evTime','evAddr'].forEach(id=>{$(id).addEventListener('input',update);$(id).addEventListener('change',update);});
 $('mMinus').onclick = () => { $('members').value = Math.max(1, getMembers() - 1); update(); };
 $('mPlus').onclick  = () => { $('members').value = Math.min(1000, getMembers() + 1); update(); };
 $('members').addEventListener('input', update);
