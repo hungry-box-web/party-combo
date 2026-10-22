@@ -445,24 +445,24 @@ function update(){
 }
 
 function waText(c){
-  const lines = ['Hi Hungry Box! 👋 I would like to place a *Party Combo* order.', ''];
+  const lines = ['Hi Hungry Box! 👋 I would like to place a *Party Combo* order.', '',
+    `*Event type:* ${$('evType').value || '(to be shared)'}`,
+    `*Event date & time:* ${evDateTxt()}`,
+    `*Event address:* ${($('evAddr').value||'').trim() || '(to be shared)'}`,
+    `*Members:* ${c.members}`,
+    `*Delivery distance:* approx. ${c.km} km`, ''];
   if (c.sel.length){
     lines.push('*Selected items (per person):*');
     c.sel.forEach((i, n) => lines.push(`${n + 1}. ${i.label} - ${inr(i.price)}`));
   } else lines.push('(I have not selected items yet — please help me choose.)');
   lines.push('',
-    `*Members:* ${c.members}`,
-    `*Delivery distance:* approx. ${c.km} km`, '',
     `Food cost per member: ${inr(c.perMember)}`,
     `Food total: ${inr(c.food)}`,
     `Packaging & disposables: ${inr(c.pack)}`,
     `Delivery (estimate): ${inr(c.del)}`,
     `*Grand total (est.): ${inr(c.total)}*`,
     `All-inclusive per member: ${inr(c.allIn)}`,
-    'Taxes as applicable.', '',
-    `*Event type:* ${$('evType').value || '(to be shared)'}`,
-    `*Event date & time:* ${evDateTxt()}`,
-    `*Event address:* ${($('evAddr').value||'').trim() || '(to be shared)'}`);
+    'Taxes as applicable.');
   return lines.join('\n');
 }
 
